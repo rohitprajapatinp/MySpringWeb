@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<UserTable, Integer>{
     // Custom Query
     // Join Queries
+
+    boolean existsByUsernameAndPassword(String un, String pwd);
 }

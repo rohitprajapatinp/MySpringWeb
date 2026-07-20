@@ -7,5 +7,18 @@
 <body>
     <div th:insert="navbar.html"></div>
     <h1>Welcome to the home page.</h1>
+    <hr>
+    <table class="table" border="2">
+        <tr>
+            <td>Id</td>
+            <td>Username</td>
+            <td>Edit User</td>
+            <td>Delete User</td>
+        </tr>
+        <tr th:each="user:${totalUsers}">
+            <td th:text="${user.getId()}"></td>
+            <td th:text="${user.getUsername()}"></td>
+        </tr>
+    </table>
 </body>
 </html>

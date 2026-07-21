@@ -54,4 +54,10 @@ public class MappingClass {
 
         //When a form data does POST request, HttpServlet Request obtains those data as parameters in controller.
     }
+
+    @GetMapping("/home")
+    public String homeGet(Model m){
+        m.addAttribute("totalUsers",uRepo.findAll());
+        return "home";
+    }
 }

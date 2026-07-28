@@ -1,5 +1,7 @@
 package io.herald.MySpringWeb.Controller;
 
+import io.herald.MySpringWeb.Model.ImageTable;
+import io.herald.MySpringWeb.Repository.ImageRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -14,6 +16,8 @@ import java.util.Base64;
 
 @Controller
 public class GalleryController {
+
+    private ImageRepository imageRepo;
     @GetMapping("/gallery")
     public String galleryGet(HttpServletRequest req, Model m){
         HttpSession session = req.getSession();
@@ -33,6 +37,9 @@ public class GalleryController {
             // To decode, we will again use the Base64 Decoder
 
             String imgString = Base64.getEncoder().encodeToString(imgBytes);
+            ImageTable img = new ImageTable();
+            img.setImage(imgString);
+            imageRepo.save(img);
         } catch (IOException e) {
             e.printStackTrace();
         }

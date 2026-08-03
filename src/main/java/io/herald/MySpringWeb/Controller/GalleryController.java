@@ -36,6 +36,7 @@ public class GalleryController {
             m.addAttribute("message", "You are not logged in!");
             return "login";
         }
+        session.setAttribute("totalImages", imageRepo.findAll());
         return "galleryPage";
     }
 
@@ -59,7 +60,8 @@ public class GalleryController {
     }
 
     @GetMapping("/gallery2")
-    public String gallery2Get(){
+    public String gallery2Get(Model m){
+        m.addAttribute("cloudImages",image2Repo.findAll());
         return "galleryPage2";
     }
 

@@ -1,6 +1,10 @@
 package io.herald.MySpringWeb.Controller;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import io.herald.MySpringWeb.Model.ImageTable;
+import io.herald.MySpringWeb.Model.ImageTable2;
+import io.herald.MySpringWeb.Repository.Image2Repository;
 import io.herald.MySpringWeb.Repository.ImageRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -14,11 +18,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Map;
 
 @Controller
 public class GalleryController {
     @Autowired
     private ImageRepository imageRepo;
+    @Autowired
+    private Cloudinary cloudinary;
+    @Autowired
+    private Image2Repository image2Repo;
+
     @GetMapping("/gallery")
     public String galleryGet(HttpServletRequest req, Model m){
         HttpSession session = req.getSession();
@@ -46,5 +56,27 @@ public class GalleryController {
         }
         session.setAttribute("totalImages", imageRepo.findAll());
         return "galleryPage";
+    }
+
+    @GetMapping("/gallery2")
+    public String gallery2Get(){
+        return "galleryPage2";
+    }
+
+    @PostMapping("/gallery2")
+    public String gallery2Post(@RequestParam("image")MultipartFile image, Model m){
+        try {
+            Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
+            String imgUrl = uploadResult.get("secure_url").toString();
+
+            ImageTable2 img = new ImageTable2();
+            img.setImageUrl(imgUrl);
+
+            image2Repo.save(img);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        m.addAttribute("cloudImages",image2Repo.findAll());
+        return "galleryPage2";
     }
 }

@@ -5,6 +5,7 @@ import io.herald.MySpringWeb.Repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.DigestUtils;
@@ -18,6 +19,8 @@ public class MappingClass {
 
     @Autowired
     private UserRepository uRepo;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/") // Url pattern fort mapping
     public String openFirstPage(){
@@ -44,13 +47,19 @@ public class MappingClass {
         System.out.println(username);
         System.out.println(password);
 
-        if(uRepo.existsByUsernameAndPassword(username,hashPassword))
-        {
-            List<UserTable> totalUsers = uRepo.findAll();
-            m.addAttribute("totalUsers", totalUsers);
-            HttpSession session = request.getSession();
-            session.setAttribute("username", username);
-            return "home.html";
+//        if(uRepo.existsByUsernameAndPassword(username,hashPassword))
+        try {
+            UserTable user = uRepo.findByUsername(username);
+
+            if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+                List<UserTable> totalUsers = uRepo.findAll();
+                m.addAttribute("totalUsers", totalUsers);
+                HttpSession session = request.getSession();
+                session.setAttribute("username", username);
+                return "home.html";
+            }
+        } catch (Exception e) {
+            m.addAttribute("message","Too many usernames!!!");
         }
 
         return "login.html";

@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.DigestUtils;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class SignupController {
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     // Autowired annotation helps in dependency injection,
@@ -40,7 +43,8 @@ public class SignupController {
         String email = request.getParameter("email");
 
         // MD5 Hashing - Crackable
-        String hashPassword = DigestUtils.md5DigestAsHex(password.getBytes());
+//        String hashPassword = DigestUtils.md5DigestAsHex(password.getBytes());
+        String hashPassword= passwordEncoder.encode(password);
 
         UserTable uc = new UserTable();
         uc.setUsername(username);

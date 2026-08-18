@@ -1,11 +1,13 @@
 package io.herald.MySpringWeb.RController;
 
+import io.herald.MySpringWeb.Component.JwtUtil;
 import io.herald.MySpringWeb.Model.UserTable;
 import io.herald.MySpringWeb.Repository.ImageRepository;
 import io.herald.MySpringWeb.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +19,10 @@ public class RControllerClass {
     private ImageRepository imageRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @GetMapping("/hello")
     public String hello(){
@@ -48,5 +54,14 @@ public class RControllerClass {
             return ResponseEntity.ok(userRepository.findById(id).get());
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID NOT FOUND");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> apiLogin(@RequestParam String username, @RequestParam String password){
+        UserTable user = userRepository.findByUsername(username);
+        if(user != null && passwordEncoder.matches(password, user.getPassword())){
+            return ResponseEntity.ok(jwtUtil.generateToken(username));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
     }
 }
